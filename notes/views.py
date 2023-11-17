@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views import generic
-
+from django.conf import settings
 from .forms import NoteForm
 from .models import Note
 
@@ -52,6 +52,14 @@ class NoteDelete(NoteBase, generic.DeleteView):
 class NotesList(NoteBase, generic.ListView):
     """Список всех заметок пользователя."""
     template_name = 'notes/list.html'
+
+    def get_queryset(self):
+        """
+        Выводим только несколько последних новостей.
+
+        Их количество определяется в настройках проекта.
+        """
+        return self.model.objects.all()[:settings.NEWS_COUNT_ON_HOME_PAGE]
 
 
 class NoteDetail(NoteBase, generic.DetailView):
